@@ -95,6 +95,29 @@ export default function App() {
         }
     }, [step, softReset, viewingSavedChart]);
     
+    const handleStepNavigation = useCallback((targetStep: Step) => {
+        const steps: Step[] = ['upload', 'selectData', 'selectChart', 'mapColumns', 'visualize'];
+        const currentStepIndex = steps.indexOf(step);
+        const targetStepIndex = steps.indexOf(targetStep);
+
+        if (targetStepIndex >= currentStepIndex) return;
+
+        // Reset state based on where we are going back to
+        if (targetStepIndex < steps.indexOf('mapColumns')) {
+            setColumnMapping({});
+        }
+        if (targetStepIndex < steps.indexOf('selectChart')) {
+            setSelectedChart(null);
+        }
+        if (targetStepIndex < steps.indexOf('selectData')) {
+            // Going back to upload step is a soft reset
+            softReset(); 
+            return;
+        }
+        
+        setStep(targetStep);
+    }, [step, softReset]);
+
     const handleFile = useCallback((file: File) => {
         setIsLoading(true);
         setError(null);
@@ -296,7 +319,7 @@ setShowSaveModal(false);
                     catalogueCount={savedVisualizations.length}
                     showBackButton={view === 'creator' && step !== 'upload'}
                 />
-                {view === 'creator' && <ProgressBar currentStep={step} />}
+                {view === 'creator' && <ProgressBar currentStep={step} onStepClick={handleStepNavigation} />}
                 <main className={`p-6 bg-slate-800/50 rounded-lg shadow-2xl min-h-[50vh] flex flex-col justify-center`}>
                     {error && (
                         <div className="bg-red-900/50 border border-red-500 text-red-300 p-4 rounded-md mb-6">
