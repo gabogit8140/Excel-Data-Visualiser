@@ -1,0 +1,5 @@
+{
+  "name": "Excel Data Visualizer",
+  "description": "An interactive web application to upload Excel (.xlsx) files, select data from sheets or tables, and instantly generate a wide variety of standard and advanced data visualizations using libraries like Chart.js, Plotly.js, and D3.js.",
+  "requestFramePermissions": []
+}
