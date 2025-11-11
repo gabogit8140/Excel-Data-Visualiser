@@ -1,5 +1,5 @@
 import React from 'react';
-import { DataSource, ChartData } from '../lib/types';
+import { DataSource, ChartData, ColumnTypeOverrides } from '../lib/types';
 import Icon from '../components/Icon';
 import DataTablePreview from '../components/DataTablePreview';
 
@@ -10,6 +10,8 @@ interface SelectDataStepProps {
     onPreview: (source: DataSource) => void;
     previewData: ChartData | null;
     previewingSource: DataSource | null;
+    columnTypeOverrides: ColumnTypeOverrides;
+    onOverridesChange: (overrides: ColumnTypeOverrides) => void;
 }
 
 const SelectDataStep: React.FC<SelectDataStepProps> = ({
@@ -18,12 +20,14 @@ const SelectDataStep: React.FC<SelectDataStepProps> = ({
     onDataSourceSelect,
     onPreview,
     previewData,
-    previewingSource
+    previewingSource,
+    columnTypeOverrides,
+    onOverridesChange
 }) => (
     <div>
         <h2 className="text-3xl font-bold text-white mb-2">Select Data Source</h2>
         <p className="text-slate-400 mb-6">
-            Choose a sheet or table from <span className="font-semibold text-cyan-400">{fileName}</span> to visualize.
+            Choose a sheet or table from <span className="font-semibold text-cyan-400">{fileName}</span>. You can override column types in the preview window.
         </p>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[60vh]">
             <div className="flex flex-col">
@@ -51,7 +55,16 @@ const SelectDataStep: React.FC<SelectDataStepProps> = ({
                     Data Preview {previewingSource && <span className="text-cyan-400 font-normal ml-2">{previewingSource.name}</span>}
                 </h3>
                 <div className="flex-grow overflow-auto">
-                    {previewData ? <DataTablePreview data={previewData} /> : <div className="h-full flex items-center justify-center text-slate-500">Click "Preview" on a data source.</div>}
+                    {previewData ? (
+                        <DataTablePreview 
+                            data={previewData} 
+                            interactiveHeaders={true}
+                            columnTypeOverrides={columnTypeOverrides}
+                            onOverrideChange={(column, type) => {
+                                onOverridesChange({ ...columnTypeOverrides, [column]: type });
+                            }}
+                        />
+                    ) : <div className="h-full flex items-center justify-center text-slate-500">Click "Preview" on a data source.</div>}
                 </div>
             </div>
         </div>

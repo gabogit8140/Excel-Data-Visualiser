@@ -1,11 +1,19 @@
 import React from 'react';
-import { ChartData } from '../lib/types';
+import { ChartData, ColumnType, ColumnTypeOverrides } from '../lib/types';
 
 interface DataTablePreviewProps {
     data: ChartData;
+    interactiveHeaders?: boolean;
+    columnTypeOverrides?: ColumnTypeOverrides;
+    onOverrideChange?: (column: string, type: ColumnType) => void;
 }
 
-const DataTablePreview: React.FC<DataTablePreviewProps> = ({ data }) => {
+const DataTablePreview: React.FC<DataTablePreviewProps> = ({
+    data,
+    interactiveHeaders = false,
+    columnTypeOverrides = {},
+    onOverrideChange
+}) => {
     if (!data || data.length === 0) {
         return <div className="text-slate-400">No data to display.</div>;
     }
@@ -14,10 +22,28 @@ const DataTablePreview: React.FC<DataTablePreviewProps> = ({ data }) => {
     return (
         <div className="overflow-x-auto h-full">
             <table className="w-full text-sm text-left text-slate-400">
-                <thead className="text-xs text-slate-300 uppercase bg-slate-700">
+                <thead className="text-xs text-slate-300 uppercase bg-slate-700 sticky top-0">
                     <tr>
                         {headers.map(header => (
-                            <th key={header} scope="col" className="px-4 py-2">{header}</th>
+                            <th key={header} scope="col" className="px-4 py-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="truncate" title={header}>{header}</span>
+                                    {interactiveHeaders && (
+                                        <select
+                                            value={columnTypeOverrides[header] || 'auto'}
+                                            onChange={(e) => onOverrideChange?.(header, e.target.value as ColumnType)}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="ml-2 bg-slate-800 border border-slate-600 rounded text-xs p-0.5 focus:ring-1 focus:ring-cyan-500 focus:outline-none"
+                                            aria-label={`Data type for ${header}`}
+                                        >
+                                            <option value="auto">Auto</option>
+                                            <option value="text">Text</option>
+                                            <option value="numeric">Number</option>
+                                            <option value="date">Date</option>
+                                        </select>
+                                    )}
+                                </div>
+                            </th>
                         ))}
                     </tr>
                 </thead>
