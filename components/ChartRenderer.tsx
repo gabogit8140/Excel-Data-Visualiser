@@ -277,6 +277,26 @@ const ChartRenderer: React.FC<ChartRendererProps> = ({ viz }) => {
                     }
                     break;
                 }
+                case 'violin': {
+                    if (!has('values')) return;
+                    const valueCols = get('values').split(',');
+                    const categoryCol = get('category');
+                    
+                    const traces = valueCols.map(col => ({
+                        type: 'violin',
+                        x: has('category') ? chartData.map(r => r[categoryCol]) : undefined,
+                        y: chartData.map(r => r[col]),
+                        name: col,
+                        box: { visible: true },
+                        meanline: { visible: true },
+                        points: 'all',
+                        jitter: 0.3,
+                        pointpos: -1.8,
+                    }));
+
+                    Plotly.newPlot(container, traces, { ...plotlyLayout, violinmode: 'group', title: plotlyLayout.title || { text: 'Violin Plot', x: 0.5, y: 0.95 } });
+                    break;
+                }
                 case 'animated-bubble': {
                     if (!has('x') || !has('y') || !has('size') || !has('frame')) return;
                     Plotly.newPlot(container, [{ x: chartData.map(r => r[get('x')]), y: chartData.map(r => r[get('y')]), mode: 'markers', marker: { size: chartData.map(r => r[get('size')] || 10), sizemode: 'diameter', color: chartData.map(r => r[get('frame')]) }, transforms: [{ type: 'groupby', groups: chartData.map(r => r[get('frame')]) }] }], { ...plotlyLayout, title: plotlyLayout.title || { text: 'Animated Bubble Chart', x: 0.5, y: 0.95 }, updatemenus: [{ type: 'buttons', showactive: false, buttons: [{ label: 'Play', method: 'animate', args: [null, { frame: { duration: 500, redraw: false }, fromcurrent: true }] }] }] });

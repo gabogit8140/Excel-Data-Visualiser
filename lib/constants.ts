@@ -96,6 +96,14 @@ export const CHART_DEFINITIONS: ChartDefinition[] = [
             { id: 'value', name: 'Value', type: 'numeric', required: true },
         ]
     },
+    {
+        id: 'violin', name: 'Violin Plot', library: 'Plotly.js', category: 'Advanced',
+        description: 'Shows data distribution and probability density. Combines a box plot with a kernel density plot.',
+        dimensions: [
+            { id: 'category', name: 'Category (X-Axis)', type: 'text', required: false },
+            { id: 'values', name: 'Values (Y-Axis, one or more)', type: 'numeric', required: true, multiple: true },
+        ]
+    },
     { 
         id: 'force-directed', name: 'Force-Directed Graph', library: 'D3.js', category: 'Advanced', 
         description: 'Shows network relationships.',
